@@ -24,3 +24,8 @@ Enter the **PyPI-tool** !
 ## HOW TO USE?
 
 Just copy the code into your project and run it from the root directory via the terminal!
+
+>**Note:** The tool only works for `.lock` file
+>dependencies listed under `[[package]]` entry. 
+>Luckily, most package managers, e.g. `uv` or
+>`poetry` handle this automaticly.
