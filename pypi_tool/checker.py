@@ -45,14 +45,6 @@ async def run_check(transitive: bool = False):
     deps = get_dependency_file(transitive=transitive)
 
     async with httpx.AsyncClient() as client:
-        # coros = [fetch_newest_release(name, client) for name in deps.keys()]
-        # results = await asyncio.gather(*coros)
-
-        # for dep_version, new_version in zip(deps.items(), results):
-        #     name, old_version = dep_version
-        #     if new_version:
-        #         days = _days_since(new_version["date"])
-        #         print_package_info(name, new_version, old_version, days)
         results = await asyncio.gather(
             *[fetch_newest_release(name, client) for name in deps]
         )
@@ -60,6 +52,7 @@ async def run_check(transitive: bool = False):
             if new_version:
                 days = _days_since(new_version["date"])
                 print_package_info(name, new_version, old_version, days)
+
 
 def _days_since(date: str) -> int:
     return (datetime.now() - datetime.fromisoformat(date)).days
