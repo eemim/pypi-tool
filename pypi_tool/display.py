@@ -1,4 +1,5 @@
 import sys
+import re
 
 POSITIVE = ("\U00002022", "\033[0;32m", "\033[96m")
 NEUTRAL = ("\U00002022", "\033[0;33m", "\033[96m")
@@ -25,7 +26,7 @@ def clean_specifier(specifier: str) -> str:
 def print_package_info(name: str, new_version: str, old_version: str, days: int):
     if not sys.stdout.isatty():
         print(
-            f"{name}: {old_version} -> {new_version['release']} (updated {days} days ago)"
+            f"{name}: {old_version} -> {new_version['release']} (updated  in PyPI {days} days ago)"
         )
         return
 

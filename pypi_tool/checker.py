@@ -53,5 +53,6 @@ async def run_check(transitive: bool = False):
                 days = _days_since(new_version["date"])
                 print_package_info(name, new_version, old_version, days)
 
+
 def _days_since(date: str) -> int:
     return (datetime.now() - datetime.fromisoformat(date)).days

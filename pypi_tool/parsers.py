@@ -30,6 +30,7 @@ def parse_requirement(dependency_file: str) -> dict[str, str]:
                 packages[name] = specifier
     return packages
 
+
 # Handle .lock files
 def parse_lockfile(dependency_file: str) -> dict[str, str]:
     packages = {}
@@ -104,6 +105,7 @@ def parse_setupcfg(dependency_file: str) -> dict[str, str]:
                     packages[name] = specifier
     return packages
 
+
 # --transitive not set, so we only parse direct dependencies from the main files
 DIRECT_PARSERS: dict[str, Callable] = {
     "requirements.txt": parse_requirement,
@@ -117,6 +119,7 @@ TRANSITIVE_PARSERS: dict[str, Callable] = {
     "*.lock": parse_lockfile,
 }
 
+
 # Get dependency file and handle it appropriately
 def get_dependency_file(transitive: bool = False) -> dict[str, str] | None:
     parsers = TRANSITIVE_PARSERS if transitive else DIRECT_PARSERS
@@ -127,6 +130,7 @@ def get_dependency_file(transitive: bool = False) -> dict[str, str] | None:
     raise FileNotFoundError(
         "No supported dependency file found in the current directory."
     )
+
 
 def _parse_requirement_line(line: str) -> tuple[str, str] | None:
     try:
