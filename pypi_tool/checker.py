@@ -1,11 +1,11 @@
 import asyncio
 import httpx
 
-from datetime import datetime
 from packaging.version import parse
 
 from .parsers import get_dependency_file
 from .display import print_package_info
+from .utils import days_since
 
 
 async def fetch_newest_release(package: str, client: httpx.AsyncClient) -> dict | None:
@@ -41,18 +41,29 @@ async def fetch_newest_release(package: str, client: httpx.AsyncClient) -> dict 
         return None
 
 
-async def run_check(transitive: bool = False):
+async def run_check(transitive: bool = False, json_output: bool = False):
     deps = get_dependency_file(transitive=transitive)
 
     async with httpx.AsyncClient() as client:
         results = await asyncio.gather(
             *[fetch_newest_release(name, client) for name in deps]
         )
-        for (name, old_version), new_version in zip(deps.items(), results):
+
+        output = []
+
+        for (name, project_version), new_version in zip(deps.items(), results):
             if new_version:
-                days = _days_since(new_version["date"])
-                print_package_info(name, new_version, old_version, days)
+                days = days_since(new_version["date"])
+                if json_output:
+                    output.append(
+                        {
+                            "name": name,
+                            "latest_pypi_version": new_version["release"],
+                            "project_version": project_version,
+                            "days_since_pypi_update": days,
+                        }
+                    )
+                else:
+                    print_package_info(name, new_version, project_version, days)
 
-
-def _days_since(date: str) -> int:
-    return (datetime.now() - datetime.fromisoformat(date)).days
+        return output if json_output else None
