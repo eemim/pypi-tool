@@ -16,16 +16,58 @@ Enter the **PyPI-tool** !
 
 ## WHAT DOES IT DO?
 
-- Searches the dependency file in your project, wheter it's a `.lock` file or `requirements.txt`
+- Searches your project for a dependency file whether that's a `requirements.txt`, `pyproject.toml`, `Pipfile`, `setup.cfg` or a `.lock` file for full transitive dependency inspection
 - Scans the dependencies and looks them up on **PyPI**
 - Shows your project’s dependency version, the latest **PyPI** version, and ***clearly indicates how long it’s been since the package was last updated on PyPI***
-- Comes with a clear color coding and suitable icons for an engaging UX/UI experience!
+- Comes with a clear color coding for an engaging UX/UI experience!
 
 ## HOW TO USE?
+> ***TBD***
 
-Just copy the code into your project and run it from the root directory via the terminal!
+Run the tool in your project directory:
 
->**Note:** The tool only works for `.lock` file
->dependencies listed under `[[package]]` entry. 
->Luckily, most package managers, e.g. `uv` or
->`poetry` handle this automaticly.
+```bash
+pypi-tool
+```
+
+### FLAGS
+
+| Flag           | Description                                                                                   |
+|----------------|-----------------------------------------------------------------------------------------------|
+| `--transitive` | Use the project's `.lock` file to include transitive dependencies instead of just direct ones |
+| `--json`       | Output results as JSON instead of the default terminal output                                 |
+
+### EXAMPLES
+
+```bash
+# Check direct dependencies
+pypi-tool
+
+# Check all dependencies including transitive
+pypi-tool --transitive
+
+# Output results as JSON
+pypi-tool --json
+
+# Combine flags
+pypi-tool --transitive --json
+```
+#### Example output
+
+```bash
+click
+• Latest PyPI version: 8.4.1
+• Project dependency: 8.0.0
+• Last updated in PyPI: 10 days ago
+
+packaging
+• Latest PyPI version: 26.2
+• Project dependency: 21.0
+• Last updated in PyPI: 37 days ago
+
+pytest
+• Latest PyPI version: 9.0.3
+• Project dependency: 8.3.5
+• Last updated in PyPI: 54 days ago
+```
+
