@@ -1,5 +1,5 @@
 [project]
-authors = [{ name = "Eemi Mäntylä", email = "eemim@protonmail.com" }]
+authors = [{ name = "eemim", email = "eemim@protonmail.com" }]
 name = "pypistale"
 license = {text = "MIT"}
 version = "0.1.0"
@@ -23,6 +23,10 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Environment :: Console",
 ]
+
+[project.urls]
+Repository = "https://github.com/eemim/pypistale"
+Issues = "https://github.com/eemim/pypistale/issues"
 
 [project.scripts]
 pypistale = "pypistale.cli:main"
