@@ -16,10 +16,29 @@ Enter the **PyPIstale** !
 
 ## WHAT DOES IT DO?
 
-- Searches your project for a dependency file whether that's a `requirements.txt`, `pyproject.toml`, `Pipfile`, `setup.cfg` or a `uv/poetry.lock` file for full transitive dependency inspection
+- Searches your project for a dependency file whether that's a `requirements.txt`,`requirements-dev.txt`, `pyproject.toml`, `Pipfile`, `setup.cfg` or a `uv/poetry.lock` file for full transitive dependency inspection. Dev dependencies are included by default.
+
+> **pyproject.toml support:**
+>
+> PEP 621 (`[project.dependencies]`, `[project.optional-dependencies]`)
+>
+> PEP 735 (`[dependency-groups]`)
+>
+> Poetry (`[tool.poetry.dependencies]`, `[tool.poetry.dev-dependencies]`, `[tool.poetry.group.X.dependencies]`)
+
 - Scans the dependencies and looks them up on **PyPI**
 - Shows your project’s dependency version, the latest **PyPI** version, and ***clearly indicates how long it’s been since the package was last updated on PyPI***
 - Comes with a clear color coding for an engaging UX/UI experience!
+
+> **Color coding:** Green = updated within the last year, Yellow = 1–3 years, Red = 3+ years without an update.
+> 
+> A red package is not necessarily bad, it just hasn't been updated recently. Some packages are stable and simply don't need updates. Use your own judgement. 
+
+## INSTALLATION
+
+```bash
+pip install pypistale
+```
 
 ## HOW TO USE?
 
@@ -31,10 +50,10 @@ pypistale
 
 ### FLAGS
 
-| Flag           | Description                                                                                   |
-|----------------|-----------------------------------------------------------------------------------------------|
-| `--transitive` | Use the project's `.lock` file to include transitive dependencies instead of just direct ones |
-| `--json`       | Output results as JSON instead of the default terminal output                                 |
+| Flag           | Description                                                                                                  |
+|----------------|--------------------------------------------------------------------------------------------------------------|
+| `--transitive` | Use the project's `.lock` file to include transitive dependencies (deps of deps) instead of just direct ones |
+| `--json`       | Output results as JSON instead of the default terminal output                                                |
 
 ### EXAMPLES
 
@@ -51,6 +70,7 @@ pypistale --json
 # Combine flags
 pypistale --transitive --json
 ```
+
 #### Example output
 
 ```bash

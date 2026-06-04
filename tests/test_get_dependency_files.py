@@ -52,3 +52,36 @@ def test_pyproject_toml_preferred_over_requirements(tmp_path, monkeypatch):
     result = get_dependency_file(transitive=False)
     assert "requests" in result
     assert "click" not in result
+
+def test_empty_pyproject_falls_back_to_requirements(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        "[project]\n"
+        'name = "myproject"\n'
+    )  # no dependencies defined
+    (tmp_path / "requirements.txt").write_text("requests==2.28.0\n")
+    result = get_dependency_file(transitive=False)
+    assert "requests" in result
+
+
+def test_merges_requirements_and_requirements_dev(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "requirements.txt").write_text("requests==2.28.0\n")
+    (tmp_path / "requirements-dev.txt").write_text("pytest>=8.0.0\n")
+    result = get_dependency_file(transitive=False)
+    assert "requests" in result
+    assert "pytest" in result
+
+
+def test_requirements_dev_ignored_when_toml_present(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        "[project]\n"
+        "dependencies = [\n"
+        '    "requests==2.28.0"\n'
+        "]\n"
+    )
+    (tmp_path / "requirements-dev.txt").write_text("pytest>=8.0.0\n")
+    result = get_dependency_file(transitive=False)
+    assert "requests" in result
+    assert "pytest" not in result
