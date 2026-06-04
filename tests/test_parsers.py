@@ -1,5 +1,5 @@
 import pytest
-from pypi_tool.parsers import (
+from pypistale.parsers import (
     parse_requirement,
     parse_lockfile,
     parse_tomlfile,

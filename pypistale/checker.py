@@ -50,21 +50,21 @@ async def run_check(transitive: bool = False, json_output: bool = False):
             *[fetch_newest_release(name, client) for name in deps]
         )
 
-        output = []
+    output = []
 
-        for (name, project_version), new_version in zip(deps.items(), results):
-            if new_version:
-                days = days_since(new_version["date"])
-                if json_output:
-                    output.append(
-                        {
-                            "name": name,
-                            "latest_pypi_version": new_version["release"],
-                            "project_version": project_version,
-                            "days_since_pypi_update": days,
-                        }
-                    )
-                else:
-                    print_package_info(name, new_version, project_version, days)
+    for (name, project_version), new_version in zip(deps.items(), results):
+        if new_version:
+            days = days_since(new_version["date"])
+            if json_output:
+                output.append(
+                    {
+                        "name": name,
+                        "latest_pypi_version": new_version["release"],
+                        "project_version": project_version,
+                        "days_since_pypi_update": days,
+                    }
+                )
+            else:
+                print_package_info(name, new_version, project_version, days)
 
-        return output if json_output else None
+    return output if json_output else None

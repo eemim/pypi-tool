@@ -1,4 +1,4 @@
-# PyPI-tool
+# PyPIstale
 
 ## INTRODUCTION
 
@@ -12,22 +12,21 @@ Do you really want to be ***dependable*** (pun totally intended) on another code
 
 If not...
 
-Enter the **PyPI-tool** !
+Enter the **PyPIstale** !
 
 ## WHAT DOES IT DO?
 
-- Searches your project for a dependency file whether that's a `requirements.txt`, `pyproject.toml`, `Pipfile`, `setup.cfg` or a `.lock` file for full transitive dependency inspection
+- Searches your project for a dependency file whether that's a `requirements.txt`, `pyproject.toml`, `Pipfile`, `setup.cfg` or a `uv/poetry.lock` file for full transitive dependency inspection
 - Scans the dependencies and looks them up on **PyPI**
 - Shows your project’s dependency version, the latest **PyPI** version, and ***clearly indicates how long it’s been since the package was last updated on PyPI***
 - Comes with a clear color coding for an engaging UX/UI experience!
 
 ## HOW TO USE?
-> ***TBD***
 
 Run the tool in your project directory:
 
 ```bash
-pypi-tool
+pypistale
 ```
 
 ### FLAGS
@@ -41,16 +40,16 @@ pypi-tool
 
 ```bash
 # Check direct dependencies
-pypi-tool
+pypistale
 
 # Check all dependencies including transitive
-pypi-tool --transitive
+pypistale --transitive
 
 # Output results as JSON
-pypi-tool --json
+pypistale --json
 
 # Combine flags
-pypi-tool --transitive --json
+pypistale --transitive --json
 ```
 #### Example output
 
@@ -58,16 +57,40 @@ pypi-tool --transitive --json
 click
 • Latest PyPI version: 8.4.1
 • Project dependency: 8.0.0
-• Last updated in PyPI: 10 days ago
+• Last updated in PyPI: 13 days ago
 
 packaging
 • Latest PyPI version: 26.2
 • Project dependency: 21.0
-• Last updated in PyPI: 37 days ago
+• Last updated in PyPI: 40 days ago
 
-pytest
-• Latest PyPI version: 9.0.3
-• Project dependency: 8.3.5
-• Last updated in PyPI: 54 days ago
+tomli
+• Latest PyPI version: 2.4.1
+• Project dependency: 2.0.0
+• Last updated in PyPI: 70 days ago
 ```
 
+#### Example output `--json`
+
+```json
+[
+  {
+    "name": "click",
+    "latest_pypi_version": "8.4.1",
+    "project_version": ">=8.0.0",
+    "days_since_pypi_update": 13
+  },
+  {
+    "name": "packaging",
+    "latest_pypi_version": "26.2",
+    "project_version": ">=21.0",
+    "days_since_pypi_update": 40
+  },
+  {
+    "name": "tomli",
+    "latest_pypi_version": "2.4.1",
+    "project_version": ">=2.0.0",
+    "days_since_pypi_update": 70
+  }
+]
+```

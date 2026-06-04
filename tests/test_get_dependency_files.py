@@ -1,5 +1,5 @@
 import pytest
-from pypi_tool.parsers import get_dependency_file
+from pypistale.parsers import get_dependency_file
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
