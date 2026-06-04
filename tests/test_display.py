@@ -1,6 +1,6 @@
 import pytest
 
-from pypi_tool.utils import format_specifier
+from pypistale.utils import format_specifier
 
 # ── format_specifier ───────────────────────────────────────────────────────────
 

@@ -16,4 +16,5 @@ def print_package_info(name: str, new_version: str, project_version: str, days: 
         f"{bullet} Latest PyPI version: {new_version['release']}\n"
         f"{bullet} Project dependency: {format_specifier(project_version)}\n"
         f"{bullet} Last updated in PyPI: {days} days ago"
+        f"{reset}"
     )

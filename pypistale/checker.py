@@ -1,5 +1,6 @@
 import asyncio
 import httpx
+import sys
 
 from packaging.version import parse
 
@@ -18,7 +19,7 @@ async def fetch_newest_release(package: str, client: httpx.AsyncClient) -> dict 
 
         # Handle KeyError for not found packages
         if "releases" not in data or not data["releases"]:
-            print(f"No PyPi releases found for: {package}\n")
+            print(f"\nNo PyPi releases found for: {package}", file=sys.stderr)
             return None
 
         releases = data["releases"]
@@ -32,12 +33,12 @@ async def fetch_newest_release(package: str, client: httpx.AsyncClient) -> dict 
                 last_release_data = releases[version][-1]
                 return dict(release=version, date=last_release_data["upload_time"])
 
-        print(f"No valid release files found for package: {package}\n")
+        print(f"\nNo valid release files found for package: {package}", file=sys.stderr)
         return None
 
     # Handle errors outside previous checks
     except (KeyError, IndexError, httpx.HTTPError) as e:
-        print(f"Failed to fetch release for '{package}': {e}\n")
+        print(f"\nFailed to fetch release for '{package}': {e}", file=sys.stderr)
         return None
 
 
@@ -49,21 +50,21 @@ async def run_check(transitive: bool = False, json_output: bool = False):
             *[fetch_newest_release(name, client) for name in deps]
         )
 
-        output = []
+    output = []
 
-        for (name, project_version), new_version in zip(deps.items(), results):
-            if new_version:
-                days = days_since(new_version["date"])
-                if json_output:
-                    output.append(
-                        {
-                            "name": name,
-                            "latest_pypi_version": new_version["release"],
-                            "project_version": project_version,
-                            "days_since_pypi_update": days,
-                        }
-                    )
-                else:
-                    print_package_info(name, new_version, project_version, days)
+    for (name, project_version), new_version in zip(deps.items(), results):
+        if new_version:
+            days = days_since(new_version["date"])
+            if json_output:
+                output.append(
+                    {
+                        "name": name,
+                        "latest_pypi_version": new_version["release"],
+                        "project_version": project_version,
+                        "days_since_pypi_update": days,
+                    }
+                )
+            else:
+                print_package_info(name, new_version, project_version, days)
 
-        return output if json_output else None
+    return output if json_output else None

@@ -264,7 +264,7 @@ wheels = [
 ]
 
 [[package]]
-name = "pypi-tool"
+name = "pypistale"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
@@ -272,14 +272,14 @@ dependencies = [
     { name = "click", version = "8.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "httpx" },
     { name = "packaging" },
-    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "tomli" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "pytest-asyncio", version = "0.24.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "pytest-asyncio", version = "1.2.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
     { name = "pytest-asyncio", version = "1.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -290,12 +290,14 @@ requires-dist = [
     { name = "click", specifier = ">=8.0.0" },
     { name = "httpx", specifier = ">=0.23.0" },
     { name = "packaging", specifier = ">=21.0" },
-    { name = "pytest", specifier = ">=8.3.5" },
-    { name = "tomli", specifier = ">=2.0.0" },
+    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.0" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest-asyncio", specifier = ">=0.24.0" }]
+dev = [
+    { name = "pytest", specifier = ">=8.3.5" },
+    { name = "pytest-asyncio", specifier = ">=0.24.0" },
+]
 
 [[package]]
 name = "pytest"

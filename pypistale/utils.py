@@ -2,10 +2,9 @@ import re
 
 from datetime import datetime
 
-POSITIVE = ("\U00002022", "\033[0;32m", "\033[96m")
-NEUTRAL = ("\U00002022", "\033[0;33m", "\033[96m")
-NEGATIVE = ("\U00002022", "\033[0;31m", "\033[96m")
-RESET = "\033[0m"
+POSITIVE = ("\U00002022", "\033[0;32m", "\033[0m")
+NEUTRAL = ("\U00002022", "\033[0;33m", "\033[0m")
+NEGATIVE = ("\U00002022", "\033[0;31m", "\033[0m")
 
 ITALIC = "\033[3m"
 RESET_ITALIC = "\033[23m"

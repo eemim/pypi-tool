@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from collections.abc import Callable
 from configparser import ConfigParser
@@ -32,6 +33,7 @@ def parse_requirement(dependency_file: str) -> dict[str, str]:
 
 
 # Handle .lock files
+# Works for both Poetry and uv.lock files since they have the same format for package entries
 def parse_lockfile(dependency_file: str) -> dict[str, str]:
     packages = {}
     with open(dependency_file, "r") as file:
@@ -64,15 +66,24 @@ def parse_tomlfile(dependency_file: str) -> dict[str, str]:
     packages = {}
 
     # PEP 621 [project.dependencies]
-    for dep in data.get("project", {}).get("dependencies", []):
-        req = _parse_requirement_line(dep)
-        if req:
-            name, specifier = req
-            packages[name] = specifier
+    _parse_dep_list(data.get("project", {}).get("dependencies", []), packages)
 
-    # Poetry [tool.poetry.dependencies]
+    # PEP 621 [project.optional-dependencies] - all groups including dev
+    for group_deps in data.get("project", {}).get("optional-dependencies", {}).values():
+        _parse_dep_list(group_deps, packages)
+
+    # PEP 735 [dependency-groups] - uv and newer tools
+    for group_deps in data.get("dependency-groups", {}).values():
+        _parse_dep_list(group_deps, packages)
+
+    # Poetry [tool.poetry.dependencies] and [tool.poetry.dev-dependencies]
+    poetry = data.get("tool", {}).get("poetry", {})
     for section in ["dependencies", "dev-dependencies"]:
-        packages.update(data.get("tool", {}).get("poetry", {}).get(section, {}))
+        packages.update(poetry.get(section, {}))
+
+    # Poetry newer group format [tool.poetry.group.X.dependencies]
+    for group in poetry.get("group", {}).values():
+        packages.update(group.get("dependencies", {}))
 
     return packages
 
@@ -107,11 +118,12 @@ def parse_setupcfg(dependency_file: str) -> dict[str, str]:
 
 
 # --transitive not set, so we only parse direct dependencies from the main files
+# We check for pyproject.toml first, then Pipfile, then setup.cfg, and finally requirements.txt
 DIRECT_PARSERS: dict[str, Callable] = {
-    "requirements.txt": parse_requirement,
     "pyproject.toml": parse_tomlfile,
     "Pipfile": parse_pipfile,
     "setup.cfg": parse_setupcfg,
+    "requirements.txt": parse_requirement,
 }
 
 # --transitive set, so we also parse transitive dependencies from lock files
@@ -121,15 +133,33 @@ TRANSITIVE_PARSERS: dict[str, Callable] = {
 
 
 # Get dependency file and handle it appropriately
-def get_dependency_file(transitive: bool = False) -> dict[str, str] | None:
-    parsers = TRANSITIVE_PARSERS if transitive else DIRECT_PARSERS
-    for pattern, parser in parsers.items():
-        matching_files = list(Path(".").glob(pattern))
-        if matching_files:
-            return parser(str(matching_files[0]))
-    raise FileNotFoundError(
-        "No supported dependency file found in the current directory."
-    )
+def get_dependency_file(transitive: bool = False) -> dict[str, str]:
+    if transitive:
+        for pattern, parser in TRANSITIVE_PARSERS.items():
+            matches = list(Path(".").glob(pattern))
+            if matches:
+                return parser(str(matches[0]))
+        raise FileNotFoundError("No lock file found.")
+
+    # For direct deps, check for pyproject.toml/Pipfile/setup.cfg first
+    for pattern, parser in DIRECT_PARSERS.items():
+        if pattern.startswith("requirements"):
+            continue
+        matches = list(Path(".").glob(pattern))
+        if matches:
+            result = parser(str(matches[0]))
+            if result:  # only return if actually found dependencies
+                return result
+
+    # Fall back to requirements files, merging all of them (requirements.txt + requirements-dev.txt)
+    packages = {}
+    for pattern in ["requirements*.txt"]:
+        for match in Path(".").glob(pattern):
+            packages.update(parse_requirement(str(match)))
+    if packages:
+        return packages
+
+    raise FileNotFoundError("No supported dependency file found.")
 
 
 def _parse_requirement_line(line: str) -> tuple[str, str] | None:
@@ -139,5 +169,14 @@ def _parse_requirement_line(line: str) -> tuple[str, str] | None:
         specifier = str(req.specifier) if req.specifier else ""
         return name, specifier
     except Exception as e:
-        print(f"Failed to parse line '{line.strip()}': {e}")
+        print(f"Failed to parse line '{line.strip()}': {e}", file=sys.stderr)
         return None
+
+
+def _parse_dep_list(deps: list, packages: dict) -> None:
+    for dep in deps:
+        if isinstance(dep, str):  # skip PEP 735 dicts like {include-group = "typing"}
+            req = _parse_requirement_line(dep)
+            if req:
+                name, specifier = req
+                packages[name] = specifier

@@ -1,5 +1,5 @@
 import pytest
-from pypi_tool.parsers import (
+from pypistale.parsers import (
     parse_requirement,
     parse_lockfile,
     parse_tomlfile,
@@ -54,9 +54,29 @@ def pyproject_toml_pep621(tmp_path):
         '    "requests==2.28.0",\n'
         '    "click>=8.0.0",\n'
         "]\n"
+        "\n"
+        "[project.optional-dependencies]\n"
+        "dev = [\n"
+        '    "pytest>=8.3.5",\n'
+        "]\n"
     )
     return str(f)
 
+@pytest.fixture
+def pyproject_toml_pep735(tmp_path):
+    f = tmp_path / "pyproject.toml"
+    f.write_text(
+        "[project]\n"
+        "dependencies = [\n"
+        '    "requests==2.28.0",\n'
+        "]\n"
+        "\n"
+        "[dependency-groups]\n"
+        "dev = [\n"
+        '    "pytest>=8.3.5",\n'
+        "]\n"
+    )
+    return str(f)
 
 @pytest.fixture
 def pyproject_toml_poetry(tmp_path):
@@ -154,6 +174,7 @@ def test_parse_tomlfile_pep621(pyproject_toml_pep621):
     result = parse_tomlfile(pyproject_toml_pep621)
     assert "requests" in result
     assert "click" in result
+    assert "pytest" in result  # dev deps included
 
 
 def test_parse_tomlfile_poetry(pyproject_toml_poetry):
