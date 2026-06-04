@@ -1,15 +1,26 @@
 [project]
+authors = [{ name = "Eemi Mäntylä", email = "eemim@protonmail.com" }]
 name = "pypi-tool"
+license = {text = "MIT"}
 version = "0.1.0"
-description = "Add your description here"
+description = "A CLI tool that checks how recently your project's dependencies were last updated on PyPI."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "click>=8.0.0",
     "httpx>=0.23.0",
     "packaging>=21.0",
-    "pytest>=8.3.5",
     "tomli>=2.0.0",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Environment :: Console",
 ]
 
 [project.scripts]
@@ -24,5 +35,6 @@ packages = ["pypi_tool"]
 
 [dependency-groups]
 dev = [
+    "pytest>=8.3.5",
     "pytest-asyncio>=0.24.0",
 ]

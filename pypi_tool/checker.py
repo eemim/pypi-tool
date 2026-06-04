@@ -1,5 +1,6 @@
 import asyncio
 import httpx
+import sys
 
 from packaging.version import parse
 
@@ -18,7 +19,7 @@ async def fetch_newest_release(package: str, client: httpx.AsyncClient) -> dict 
 
         # Handle KeyError for not found packages
         if "releases" not in data or not data["releases"]:
-            print(f"No PyPi releases found for: {package}\n")
+            print(f"\nNo PyPi releases found for: {package}", file=sys.stderr)
             return None
 
         releases = data["releases"]
@@ -32,12 +33,12 @@ async def fetch_newest_release(package: str, client: httpx.AsyncClient) -> dict 
                 last_release_data = releases[version][-1]
                 return dict(release=version, date=last_release_data["upload_time"])
 
-        print(f"No valid release files found for package: {package}\n")
+        print(f"\nNo valid release files found for package: {package}", file=sys.stderr)
         return None
 
     # Handle errors outside previous checks
     except (KeyError, IndexError, httpx.HTTPError) as e:
-        print(f"Failed to fetch release for '{package}': {e}\n")
+        print(f"\nFailed to fetch release for '{package}': {e}", file=sys.stderr)
         return None
 
 

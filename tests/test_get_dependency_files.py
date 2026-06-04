@@ -41,3 +41,14 @@ def test_get_dependency_file_transitive_uses_lockfile(setup_files):
     result = get_dependency_file(transitive=True)
     assert "click" in result
     assert "requests" not in result
+
+
+def test_pyproject_toml_preferred_over_requirements(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        "[project]\n" "dependencies = [\n" '    "requests==2.28.0"\n' "]\n"
+    )
+    (tmp_path / "requirements.txt").write_text("click>=8.0.0\n")
+    result = get_dependency_file(transitive=False)
+    assert "requests" in result
+    assert "click" not in result

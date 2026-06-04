@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from collections.abc import Callable
 from configparser import ConfigParser
@@ -32,6 +33,7 @@ def parse_requirement(dependency_file: str) -> dict[str, str]:
 
 
 # Handle .lock files
+# Works for both Poetry and uv.lock files since they have the same format for package entries
 def parse_lockfile(dependency_file: str) -> dict[str, str]:
     packages = {}
     with open(dependency_file, "r") as file:
@@ -107,11 +109,12 @@ def parse_setupcfg(dependency_file: str) -> dict[str, str]:
 
 
 # --transitive not set, so we only parse direct dependencies from the main files
+# We check for pyproject.toml first, then Pipfile, then setup.cfg, and finally requirements.txt
 DIRECT_PARSERS: dict[str, Callable] = {
-    "requirements.txt": parse_requirement,
     "pyproject.toml": parse_tomlfile,
     "Pipfile": parse_pipfile,
     "setup.cfg": parse_setupcfg,
+    "requirements.txt": parse_requirement,
 }
 
 # --transitive set, so we also parse transitive dependencies from lock files
@@ -139,5 +142,5 @@ def _parse_requirement_line(line: str) -> tuple[str, str] | None:
         specifier = str(req.specifier) if req.specifier else ""
         return name, specifier
     except Exception as e:
-        print(f"Failed to parse line '{line.strip()}': {e}")
+        print(f"Failed to parse line '{line.strip()}': {e}", file=sys.stderr)
         return None
