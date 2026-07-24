@@ -1,4 +1,5 @@
 # PyPIstale
+> [see at pypi.org](https://pypi.org/project/pypistale/)
 
 ## INTRODUCTION
 
